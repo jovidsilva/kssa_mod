@@ -25,6 +25,37 @@ You can install original version of kssa like so:
 library(devtools)
 install_github("pipeben/kssa")
 ```
+## Usage
+
+You can run kssa like in the following example that plots the results obtained when applying kssa to the example time series tsAirgapComplete.
+
+```
+# Create 20% random missing data in tsAirgapComplete time series from imputeTS
+set.seed(1234)
+library("kssa")
+library("imputeTS")
+airgap_na <- missMethods::delete_MCAR(as.data.frame(tsAirgapComplete), 0.2)
+
+# Convert co2_na to time series object
+airgap_na_ts <- ts(airgap_na, start = c(1959, 1), end = c(1997, 12), frequency = 12)
+
+# Apply the kssa algorithm with 5 segments,
+# 10 iterations, with missing percentages for each segment
+# compare among all available methods in the package.
+# Remember that percentmd must match with
+# the real percentage of missing data in the
+# input co2_na_ts time series
+
+percentmds <- c(0.014, 0.0718, 0.0618, 0.0577, 0.0785)
+
+results_kssa <- kssa(airgap_na_ts,
+  start_methods = "all",
+  actual_methods = "all",
+  segments = 5,
+  iterations = 10,
+  percentmd = percentmds
+)
+```
 
 
 
