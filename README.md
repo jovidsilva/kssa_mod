@@ -62,12 +62,14 @@ To obtain imputations with the best method, or any method of preference
 use function get_imputations().
 
 ## Reference
-You can cite kssa the following: 
+You can cite the original kssa paper using the following: 
 
   > Ivan-Felipe Benavides, Steffen Moritz, Brayan-David Aroca-Gonzalez, Jhoana
   Romero, Marlon Santacruz and John-Josephraj Selvaraj (2022). kssa: Known
   Sub-Sequence Algorithm. R package version 0.0.1.
   https://github.com/pipeben/kssa
+
+if you use this version of the Repo consider attributing this repo along with the above paper
   
 ## License
 GPL-3
