@@ -47,9 +47,7 @@ airgap_na_ts <- ts(airgap_na, start = c(1959, 1), end = c(1997, 12), frequency =
 # Apply the kssa algorithm with 5 segments,
 # 10 iterations, with missing percentages for each segment
 # compare among all available methods in the package.
-# Remember that percentmd must match with
-# the real percentage of missing data in the
-# input co2_na_ts time series
+
 
 percentmds <- c(0.014, 0.0718, 0.0618, 0.0577, 0.0785) # missing percentages to use for each segment
 
