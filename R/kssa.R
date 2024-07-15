@@ -77,7 +77,7 @@ kssa <- function(x_ts, # Time-series
       "na_ma(x_ts,k=3,weighting = 'simple')",
       "na_ma(x_ts,k=3,weighting = 'linear')",
       "na_ma(x_ts,k=3,weighting = 'exponential')",
-      "na_seadec(x_ts,algorithm = 'kalman')",
+      "na_seadec(x_ts,find_frequency = TRUE,algorithm = 'kalman')",
       "na_locf(x_ts,option = 'locf',na_remaining = 'rev')",
       "na.interp(x_ts)"
     ),
@@ -90,7 +90,7 @@ kssa <- function(x_ts, # Time-series
       "na_ma(newmdsimulation,k=3,weighting = 'simple')",
       "na_ma(newmdsimulation,k=3,weighting = 'linear')",
       "na_ma(newmdsimulation,k=3,weighting = 'exponential')",
-      "na_seadec(newmdsimulation,algorithm = 'kalman')",
+      "na_seadec(newmdsimulation,find_frequency = TRUE,algorithm = 'kalman')",
       "na_locf(newmdsimulation,option = 'locf',na_remaining = 'rev')",
       "na.interp(newmdsimulation)"
     )
