@@ -8,6 +8,11 @@
 
 This package implements the Known Sub-Sequence Algorithm <doi: 10.1016/j.aaf.2021.12.013> which helps to automatically compare, validate and identify the best methods for missing data imputation in time series. It compares the performance of 11 state-of-the-art's imputation methods avaliable from multiple CRAN packages and delivers a best method suited for each particular time series.
 
+In addition the following changes have been made.
+
+1. fixed non continuous time segments
+2. introduced individual segments missing percentages
+
 ## Installation
 
 You can install this development version of kssa like so:
@@ -17,7 +22,7 @@ library(devtools)
 install_github("jovidsilva/kssa_mod")
 ```
 
-## Installation
+## Installation of Original package
 
 You can install original version of kssa like so:
 
@@ -36,7 +41,7 @@ library("kssa")
 library("imputeTS")
 airgap_na <- missMethods::delete_MCAR(as.data.frame(tsAirgapComplete), 0.2)
 
-# Convert co2_na to time series object
+# Create an artificial time series using airgap_na with a duration of 38 years
 airgap_na_ts <- ts(airgap_na, start = c(1959, 1), end = c(1997, 12), frequency = 12)
 
 # Apply the kssa algorithm with 5 segments,
@@ -46,7 +51,7 @@ airgap_na_ts <- ts(airgap_na, start = c(1959, 1), end = c(1997, 12), frequency =
 # the real percentage of missing data in the
 # input co2_na_ts time series
 
-percentmds <- c(0.014, 0.0718, 0.0618, 0.0577, 0.0785)
+percentmds <- c(0.014, 0.0718, 0.0618, 0.0577, 0.0785) # missing percentages to use for each segment
 
 results_kssa <- kssa(airgap_na_ts,
   start_methods = "all",
