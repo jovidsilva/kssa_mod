@@ -1,120 +1,9 @@
-#' @title kssa Algorithm
-#'
-#' @description Run the Known Sub-Sequence Algorithm to compare the performance of imputation methods on a time series of interest
-#' @param x_ts Time series object \code{\link{ts}} containing missing data (NA)
-#'
-#' @param actual_methods The imputation methods to be compared and validated. It can be a string vector containing the following
-#'  You can choose between the following:
-#'
-#' \itemize{
-#'    \item{"all" - compare among all methods automatically - Default}
-#'    \item{"auto.arima" - State space representation of an ARIMA model}
-#'    \item{"StructTS" - State space representation of a structural model}
-#'    \item{"seadec" - Seasonal decomposition with Kalman smoothing}
-#'    \item{"linear_i" - Linear interpolation}
-#'    \item{"spline_i" - Spline interpolation}
-#'    \item{"stine_i" - Stineman interpolation}
-#'    \item{"simple_ma" - Simple moving average}
-#'    \item{"linear_ma" - Linear moving average}
-#'    \item{"exponential_ma" - Exponential moving average}
-#'    \item{"locf" - Last observation carried forward}
-#'    \item{"stl" - Seasonal and trend decomposition with Loess}
-#'    }
-#'
-#'    For further details on these imputation methods please check packages \code{\link{imputeTS}} and \code{\link{forecast}}
-#'
-#' @param start_methods String vector. The method or methods to start the algorithm.
-#'  Same as for actual_methods
-#'
-#' @param segments Integer. Into how many segments the time series will be divided
-#' @param iterations Integer. How many iterations to run
-#' @param percentmd Numeric. Percentage of missing data. Must match with the true percentage of missing data in x_ts
-#' @param seed Numeric. Random seed to choose
-#' @return A list of results to be plotted with function \code{\link{kssa_plot}} for easy interpretation
-#' @references Benavides, I. F., Santacruz, M., Romero-Leiton, J. P., Barreto, C., & Selvaraj, J. J. (2022). Assessing methods for multiple imputation of systematic missing data in marine fisheries time series with a new validation algorithm. Aquaculture and Fisheries.
-#' \href{https://www.sciencedirect.com/science/article/pii/S2468550X21001696}{Full text publication}.
-#'
-#' @examples
-#' \donttest{
-#'
-#' # Example 1: Compare all imputation methods
-#'
-#' library("kssa")
-#' library("imputeTS")
-#'
-#' # Create 20% random missing data in tsAirgapComplete time series from imputeTS
-#' airgap_na <- missMethods::delete_MCAR(as.data.frame(tsAirgapComplete), 0.2)
-#'
-#' # Convert to time series object
-#' airgap_na_ts <- ts(airgap_na, start = c(1959, 1), end = c(1997, 12), frequency = 12)
-#'
-#' # Apply the kssa algorithm with 5 segments, 10 iterations, 20% of missing data,
-#' # compare among all available methods in the package.
-#' # Remember that percentmd must match with
-#' # the real percentage of missing data in the input time series
-#'
-#' results_kssa <- kssa(airgap_na_ts,
-#'   start_methods = "all",
-#'   actual_methods = "all",
-#'   segments = 5,
-#'   iterations = 10,
-#'   percentmd = 0.2
-#' )
-#'
-#' # Print and check results
-#' results_kssa
-#'
-#' # For an easy interpretation of kssa results
-#' # please use function kssa_plot
-#' }
-#'
-#'
-#'
-#' # Example 2: Compare only locf and linear imputation
-#'
-#' library("kssa")
-#' library("imputeTS")
-#'
-#' # Create 20% random missing data in tsAirgapComplete time series from imputeTS
-#' airgap_na <- missMethods::delete_MCAR(as.data.frame(tsAirgapComplete), 0.2)
-#'
-#' # Convert to time series object
-#' airgap_na_ts <- ts(airgap_na, start = c(1959, 1), end = c(1997, 12), frequency = 12)
-#'
-#' # Apply the kssa algorithm with 5 segments, 10 iterations, 20% of missing data,
-#' # compare among all applied methods (locf and linear interpolation).
-#' # Remember that percentmd must match with
-#' # the real percentage of missing data in the input time series
-#'
-#' results_kssa <- kssa(airgap_na_ts,
-#'   start_methods = c("locf", "linear_i"),
-#'   actual_methods = c("locf", "linear_i"),
-#'   segments = 5,
-#'   iterations = 10,
-#'   percentmd = 0.2
-#' )
-#'
-#' # Print and check results
-#' results_kssa
-#'
-#' # For an easy interpretation of kssa results
-#' # please use function kssa_plot
-#'
-#' @importFrom imputeTS na_kalman na_interpolation na_ma na_seadec na_locf
-#' @importFrom forecast na.interp
-#' @importFrom missMethods delete_MCAR
-#' @importFrom stats sd cor ts window
-#' @importFrom Metrics rmse mase mape smape
-#' @importFrom zoo coredata index
-#' @importFrom rlang .data
-#' @export
-
 kssa <- function(x_ts, # Time-series
                  start_methods, # Can select various
                  actual_methods, # Can select various or all
                  segments = 5, # Number of segments to ts be divided
                  iterations = 10, # Replicate number
-                 percentmd = 0.2, # New Missing Data (MD) percentage in simulations
+                 percentmd, # New Missing Data (MD) percentage in simulations
                  seed = 1234) { # Seed number
 
   results <- data.frame( # Create data frame where put the final results
@@ -141,7 +30,7 @@ kssa <- function(x_ts, # Time-series
     size_window_B <- seq( # generate B point of time window
       from = round(length(x) / segments), # from length / nparts
       to = length(x), # to max length of TS
-      by = round(length(x) / segments) + 1 # step by step
+      by = round(length(x) / segments) # step by step
     )
     size_window_A <- size_window_B + 1 # Generate A point of time window
     size_window_B <- c(size_window_B, length(x)) # Put last one length
@@ -159,7 +48,7 @@ kssa <- function(x_ts, # Time-series
 
       m_a2 <- sample(
         x = index(chunk), # Take new sample for simlate new MD
-        size = (ceiling(length(chunk) * percentmd)), replace = F,
+        size = (ceiling(length(chunk) * percentmd[i])), replace = F,
         prob = mdoriginal[size_window_A[i]:size_window_B[i]]
       )
 
