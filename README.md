@@ -1,5 +1,5 @@
 
-# kssa
+# kssa modified
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/SteffenMoritz/kssa/workflows/R-CMD-check/badge.svg)](https://github.com/SteffenMoritz/kssa/actions)
