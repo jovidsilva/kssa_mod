@@ -3,7 +3,7 @@ kssa <- function(x_ts, # Time-series
                  actual_methods, # Can select various or all
                  segments = 5, # Number of segments to ts be divided
                  iterations = 10, # Replicate number
-                 percentmd, # New Missing Data (MD) percentage in simulations
+                 percentmd, # New Missing Data (MD) percentage for each segment
                  seed = 1234) { # Seed number
 
   results <- data.frame( # Create data frame where put the final results
@@ -30,7 +30,7 @@ kssa <- function(x_ts, # Time-series
     size_window_B <- seq( # generate B point of time window
       from = round(length(x) / segments), # from length / nparts
       to = length(x), # to max length of TS
-      by = round(length(x) / segments) # step by step
+      by = round(length(x) / segments) # step by step (removed + 1 causes borders to be incorrect)
     )
     size_window_A <- size_window_B + 1 # Generate A point of time window
     size_window_B <- c(size_window_B, length(x)) # Put last one length
